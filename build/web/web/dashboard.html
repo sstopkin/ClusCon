@@ -1,0 +1,131 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <title>ClusCon main</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body{
+            padding: 40px;
+        }
+    </style>
+    <script src="js/jquery.min.js"> </script>
+    <script src="js/bootstrap.min.js"> </script>
+    <script>
+        var loaded=0;
+        function AjaxCall(){
+            $.ajax({
+                type:"GET",
+                url: "/ClusCon/background",
+                data: {action: 'pinger'}
+            }).done(function(msg){
+                $("#Loading").hide();
+                $("#removable").remove();
+                $("#IPs").append(msg);
+                if (loaded===0){
+                    $("#Status").show();
+                    $("#listatus").addClass("active");
+                    $("#licli").removeClass("active");
+                    $("#lifilemanager").removeClass("active");
+                }
+                loaded=1;
+                setTimeout(AjaxCall,10000);
+            });
+        }
+        $(document).ready(function(){
+            $("#Filemanager").hide();
+            $("#CLI").hide();
+            $("#Status").hide();
+            $("#Loading").show();
+            $("#listatus").click(function(){
+                if (loaded>0){
+                $("#Filemanager").hide();
+                $("#CLI").hide();
+                $("#Status").show();
+                $("#listatus").addClass("active");
+                $("#licli").removeClass("active");
+                $("#lifilemanager").removeClass("active");
+                }
+            });
+            $("#lifilemanager").click(function(){
+                if (loaded>0){
+                $("#CLI").hide();
+                $("#Status").hide();
+                $("#Filemanager").show();
+                $("#listatus").removeClass("active");
+                $("#licli").removeClass("active");
+                $("#lifilemanager").addClass("active");
+                }
+            });
+            $("#licli").click(function(){
+                if (loaded>0){
+                $("#Filemanager").hide();
+                $("#Status").hide();
+                $("#CLI").show();
+                $("#listatus").removeClass("active");
+                $("#licli").addClass("active");
+                $("#lifilemanager").removeClass("active");
+                }
+            });
+            $("#out").click(function(){
+                      $.ajax({
+                        type: "POST",
+                        dataType: "text",
+                        url: "/ClusCon/background",
+                        data: {action: 'logout'}
+                      }).done(function(){
+                          window.location.replace("/ClusCon/web/login.html");
+                      }); 
+            });
+            AjaxCall();
+        });
+    </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar navbar-fixed-top navbar-inverse">
+                <div class="navbar-inner">
+                    <a class="brand">ClusCon</a>
+                    <ul class="nav">
+                        <li id="listatus"><a href="#Status">Status</a></li>
+                        <li id="lifilemanager"><a href="#Filemanager">File Manager</a></li>
+                        <li id="licli"><a href="#CLI">CLI</a></li>
+                    </ul>
+                    <form class="navbar-form pull-right">
+                        <button class="btn" type="button" id="out">Log out</button>
+                    </form>
+                </div>
+            </div>
+            <div id="Loading">
+                <h1>Loading ClusCon...</h1>
+                <div class="progress progress-striped active">
+                    <div class="bar" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div id="Status">
+                <table class="table table-striped" id="IPs">
+                    <thead>
+                            <tr>
+                                <th>IP</th>
+                                <th>Availability</th>
+                            </tr>
+                    </thead>
+                </table>
+            </div>
+            <div id="Filemanager">
+                
+            </div>
+            <div id="CLI">
+                
+            </div>
+        </div>
+    </body>
+</html>
